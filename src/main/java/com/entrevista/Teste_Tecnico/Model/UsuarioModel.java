@@ -1,9 +1,20 @@
 package com.entrevista.Teste_Tecnico.Model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class UsuarioModel {
 
+
+    @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    private int id;
+
+
     private String nome;
-    private String id;
     private String email;
     private String password;
     private int idade;
@@ -41,11 +52,11 @@ public class UsuarioModel {
         this.email = email;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

@@ -28,6 +28,11 @@ public class UsuarioController {
         return comandos.findAll();
     }
 
+    @GetMapping("/{id}")
+    public UsuarioModel BuscarUsuarios(@PathVariable Integer id) {
+        return comandos.findById(id).orElseThrow();
+    }
+
     @PutMapping("/{id}")
     public UsuarioModel atualizarUsuario(@PathVariable Integer id,@RequestBody UsuarioModel dadoAtualizado){
 

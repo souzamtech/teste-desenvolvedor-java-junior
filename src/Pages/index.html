@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Usuários | Teste Técnico</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a252f;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        label span.required {
+            color: #e74c3c;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #3498db;
+        }
+
+        .botoes-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        button {
+            flex: 1;
+            min-width: 130px;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .btn-post { background-color: #27ae60; }   /* Verde */
+        .btn-get { background-color: #2980b9; }    /* Azul */
+        .btn-get-id { background-color: #16a085; } /* Verde Água */
+        .btn-put { background-color: #f39c12; }    /* Laranja */
+        .btn-delete { background-color: #c0392b; } /* Vermelho */
+
+        .resposta-section {
+            background-color: #1e1e1e;
+            color: #00ff66;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+
+        .resposta-section h3 {
+            color: #ffffff;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        #telaResposta {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.9rem;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>👤 Painel de Testes - API de Usuários</h1>
+
+        <!-- Formulário de Entrada de Dados com Validações HTML5 -->
+        <form id="userForm" onsubmit="return false;">
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="inputId">ID do Usuário (para Buscar, Atualizar ou Deletar):</label>
+                    <input type="number" id="inputId" placeholder="Ex: 1">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputNome">Nome <span class="required">*</span>:</label>
+                    <input type="text" id="inputNome" required placeholder="Digite o nome completo">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail">E-mail <span class="required">*</span>:</label>
+                    <input type="email" id="inputEmail" required placeholder="exemplo@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputPassword">Senha (min. 6 caracteres) <span class="required">*</span>:</label>
+                    <input type="password" id="inputPassword" required minlength="6" placeholder="Mínimo 6 caracteres">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputIdade">Idade:</label>
+                    <input type="number" id="inputIdade" placeholder="Ex: 26">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="inputEndereco">Endereço:</label>
+                    <input type="text" id="inputEndereco" placeholder="Rua, Número, Bairro...">
+                </div>
+            </div>
+
+            <!-- Botões de Ação -->
+            <div class="botoes-container">
+                <button type="button" class="btn-post" onclick="fazerPOST()">Cadastrar (POST)</button>
+                <button type="button" class="btn-get" onclick="fazerGET()">Listar Todos (GET)</button>
+                <button type="button" class="btn-get-id" onclick="fazerGETPorId()">Buscar por ID (GET)</button>
+                <button type="button" class="btn-put" onclick="fazerPUT()">Atualizar (PUT)</button>
+                <button type="button" class="btn-delete" onclick="fazerDELETE()">Excluir (DELETE)</button>
+            </div>
+        </form>
+
+        <!-- Console de Resposta / Retorno da API -->
+        <div class="resposta-section">
+            <h3>Retorno da API / Status da Validação:</h3>
+            <pre id="telaResposta">Nenhuma requisição feita ainda. Clique em um botão acima!</pre>
+        </div>
+    </div>
+
+    <script>
+        const URL_API = "http://localhost:8080/usuarios";
+
+        // Função para exibir resultados na tela
+        function mostrarNaTela(dados) {
+            const tela = document.getElementById("telaResposta");
+            tela.innerText = typeof dados === "object" ? JSON.stringify(dados, null, 4) : dados;
+        }
+
+        // --- FUNÇÃO AUXILIAR DE VALIDAÇÃO ---
+        async function validarCampos(validarSenha = true, ignorarIdAtual = null) {
+            const nome = document.getElementById("inputNome").value.trim();
+            const email = document.getElementById("inputEmail").value.trim();
+            const password = document.getElementById("inputPassword").value;
+
+            // 1. Nome obrigatório
+            if (!nome) {
+                mostrarNaTela({ status: 400, erro: "Validação", mensagem: "O campo 'Nome' é obrigatório." });
+                return false;
+            }
+
+            // 2. E-mail obrigatório
+            if (!email) {
+                mostrarNaTela({ status: 400, erro: "Validação", mensagem: "O campo 'E-mail' é obrigatório." });
+                return false;
+            }
+
+            // 3. E-mail em formato válido (Regex)
+            const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!regexEmail.test(email)) {
+                mostrarNaTela({ status: 400, erro: "Validação", mensagem: "O 'E-mail' digitado não possui um formato válido." });
+                return false;
+            }
+
+            // 4. Senha obrigatória e tamanho mínimo (no caso de criação/atualização de senha)
+            if (validarSenha) {
+                if (!password) {
+                    mostrarNaTela({ status: 400, erro: "Validação", mensagem: "O campo 'Senha' é obrigatório." });
+                    return false;
+                }
+                if (password.length < 6) {
+                    mostrarNaTela({ status: 400, erro: "Validação", mensagem: "A 'Senha' deve conter no mínimo 6 caracteres." });
+                    return false;
+                }
+            }
+
+            // 5. Verificar e-mail duplicado
+            try {
+                const res = await fetch(URL_API);
+                if (res.ok) {
+                    const usuarios = await res.json();
+                    const emailExistente = usuarios.some(u => 
+                        u.email && u.email.toLowerCase() === email.toLowerCase() && u.id !== ignorarIdAtual
+                    );
+
+                    if (emailExistente) {
+                        mostrarNaTela({ status: 400, erro: "Validação", mensagem: "Já existe um usuário cadastrado com este e-mail!" });
+                        return false;
+                    }
+                }
+            } catch (e) {
+                console.warn("Não foi possível verificar unicidade de e-mail localmente.", e);
+            }
+
+            return true;
+        }
+
+        // ==========================================
+        // 1. GET - BUSCAR TODOS
+        // ==========================================
+        async function fazerGET() {
+            try {
+                const resposta = await fetch(URL_API);
+                const dados = await resposta.json();
+                mostrarNaTela(dados);
+            } catch (error) {
+                mostrarNaTela({ status: 500, erro: "Erro ao realizar requisição GET", detalhe: error.message });
+            }
+        }
+
+        // ==========================================
+        // 2. GET POR ID - BUSCAR UM ÚNICO USUÁRIO
+        // ==========================================
+        async function fazerGETPorId() {
+            const id = document.getElementById("inputId").value;
+            if (!id) {
+                mostrarNaTela({ status: 400, erro: "Validação", mensagem: "Por favor, informe o ID para buscar." });
+                return;
+            }
+
+            try {
+                const resposta = await fetch(URL_API + "/" + id);
+                if (resposta.ok) {
+                    const dados = await resposta.json();
+                    mostrarNaTela(dados);
+                } else {
+                    // Resposta adequada para recurso inexistente (404)
+                    mostrarNaTela({ status: 404, erro: "Not Found", mensagem: "Usuário com ID " + id + " não foi encontrado." });
+                }
+            } catch (error) {
+                mostrarNaTela({ status: 500, erro: "Erro na conexão", detalhe: error.message });
+            }
+        }
+
+        // ==========================================
+        // 3. POST - INSERIR (Com Validações)
+        // ==========================================
+        async function fazerPOST() {
+            const ehValido = await validarCampos(true);
+            if (!ehValido) return;
+
+            const usuarioNovo = {
+                nome: document.getElementById("inputNome").value.trim(),
+                email: document.getElementById("inputEmail").value.trim(),
+                password: document.getElementById("inputPassword").value,
+                idade: document.getElementById("inputIdade").value ? parseInt(document.getElementById("inputIdade").value) : null,
+                endereco: document.getElementById("inputEndereco").value.trim() || null
+            };
+
+            try {
+                const resposta = await fetch(URL_API, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(usuarioNovo)
+                });
+
+                const dados = await resposta.json();
+                mostrarNaTela(dados);
+            } catch (error) {
+                mostrarNaTela({ status: 500, erro: "Erro ao cadastrar usuário", detalhe: error.message });
+            }
+        }
+
+        // ==========================================
+        // 4. PUT - ATUALIZAR (Com Validações e Checagem de ID)
+        // ==========================================
+        async function fazerPUT() {
+            const id = parseInt(document.getElementById("inputId").value);
+            if (!id) {
+                mostrarNaTela({ status: 400, erro: "Validação", mensagem: "Por favor, informe o ID do usuário que deseja atualizar." });
+                return;
+            }
+
+            const ehValido = await validarCampos(true, id);
+            if (!ehValido) return;
+
+            const usuarioAtualizado = {
+                nome: document.getElementById("inputNome").value.trim(),
+                email: document.getElementById("inputEmail").value.trim(),
+                password: document.getElementById("inputPassword").value,
+                idade: document.getElementById("inputIdade").value ? parseInt(document.getElementById("inputIdade").value) : null,
+                endereco: document.getElementById("inputEndereco").value.trim() || null
+            };
+
+            try {
+                const resposta = await fetch(URL_API + "/" + id, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(usuarioAtualizado)
+                });
+
+                if (resposta.ok) {
+                    const dados = await resposta.json();
+                    mostrarNaTela(dados);
+                } else {
+                    mostrarNaTela({ status: 404, erro: "Not Found", mensagem: "Não foi possível atualizar. Usuário com ID " + id + " não existe." });
+                }
+            } catch (error) {
+                mostrarNaTela({ status: 500, erro: "Erro ao atualizar usuário", detalhe: error.message });
+            }
+        }
+
+        // ==========================================
+        // 5. DELETE - APAGAR (Com Checagem de Recurso Inexistente)
+        // ==========================================
+        async function fazerDELETE() {
+            const id = document.getElementById("inputId").value;
+            if (!id) {
+                mostrarNaTela({ status: 400, erro: "Validação", mensagem: "Por favor, informe o ID do usuário que deseja excluir." });
+                return;
+            }
+
+            try {
+                const resposta = await fetch(URL_API + "/" + id, {
+                    method: "DELETE"
+                });
+
+                if (resposta.ok) {
+                    const textoMensagem = await resposta.text();
+                    mostrarNaTela(textoMensagem || { status: 200, mensagem: "Usuário ID " + id + " removido com sucesso!" });
+                } else {
+                    mostrarNaTela({ status: 404, erro: "Not Found", mensagem: "Não foi possível excluir. Usuário com ID " + id + " não encontrado." });
+                }
+            } catch (error) {
+                mostrarNaTela({ status: 500, erro: "Erro ao deletar usuário", detalhe: error.message });
+            }
+        }
+    </script>
+</body>
+</html>

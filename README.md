@@ -70,14 +70,40 @@ teste-desenvolvedor-java-junior/
 
 O usuário possui os seguintes dados:
 
-| Campo      | Tipo    | Obrigatório |
-| ---------- | ------- | ----------- |
-| `id`       | Long    | Sim         |
-| `nome`     | String  | Sim         |
-| `email`    | String  | Sim         |
-| `password` | String  | Sim         |
-| `idade`    | Integer | Sim         |
-| `endereco` | String  | Sim         |
+| Campo      | Tipo   | Obrigatório |
+| ---------- | ------ | ----------- |
+| `id`       | int    | Não, gerado automaticamente |
+| `nome`     | String | Sim |
+| `email`    | String | Sim |
+| `password` | String | Sim |
+| `idade`    | int    | Não |
+| `endereco` | String | Não |
+
+O campo `id` é gerado automaticamente pela aplicação no momento do cadastro.
+
+## Validações
+
+A aplicação realiza validações básicas nos dados recebidos para cadastro e atualização de usuários, conforme os requisitos do teste técnico.
+
+### Nome
+
+O campo `nome` é obrigatório e não pode ser enviado vazio.
+
+### E-mail
+
+O campo `email` é obrigatório e deve possuir um formato válido.
+
+Também não é permitido cadastrar dois usuários com o mesmo endereço de e-mail.
+
+### Senha
+
+O campo `password` é obrigatório e deve possuir um tamanho mínimo definido pela aplicação.
+
+### Usuário inexistente
+
+As operações de busca, atualização e exclusão verificam se o usuário informado existe antes de concluir a operação.
+
+Caso o usuário não seja encontrado, a API retorna uma resposta adequada informando que o recurso não existe.
 
 ## Endpoints
 

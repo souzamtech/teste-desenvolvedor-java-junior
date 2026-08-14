@@ -14,7 +14,7 @@ import java.util.List;
 
 public class UsuarioController {
 
-    @Autowired
+    @Autowired // Injecao de dependencia do repositorio para acesso ao banco
     private UsuarioRepository comandos;
 
     @PostMapping

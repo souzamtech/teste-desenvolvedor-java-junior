@@ -9,9 +9,10 @@ import jakarta.persistence.Id;
 public class UsuarioModel {
 
 
-    @Id
+    @Id //Id- Definimos que cada ID seja único (PK)
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private int id;
+
 
 
     private String nome;
